@@ -72,8 +72,8 @@
         App No: IN26012831\\
         
         \vspace{1.5cm}
-        \textit{In partial fulfillment for the award of the degree of}\\
-        \textbf{BACHELOR OF TECHNOLOGY}\\
+        \textit{In partial fulfillment for the award of the Course AI-ML Internship of}\\
+        \textbf{MPOnline}\\
         in\\
         \textbf{Computer Science and Engineering}
         
@@ -106,18 +106,31 @@
 \newpage
 
 \section{Introduction}
-The \textbf{AI-Powered Smart Retail Platform} is an end-to-end application designed to automate and simplify daily store operations. The platform integrates Computer Vision and Natural Language Processing models into a single user interface. 
+In the modern brick-and-mortar retail sector, customer experience and operational efficiency have become the primary benchmarks for success. With the rise of e-commerce, physical retail stores are undergoing a massive digital transformation to stay competitive. Key areas of this transformation include:
+\begin{itemize}
+    \item \textbf{Automatic Checkout (ACO) Systems:} Speeding up payment lanes by automatically identifying product packaging without manual barcode scanning.
+    \item \textbf{Personalized Loyalty Portals:} Automatically detecting returning loyalty members at self-service kiosks to welcome them and customize discounts.
+    \item \textbf{Sentiment Feedback Loops:} Instantly evaluating customer reviews to identify grievances and track overall store satisfaction.
+    \item \textbf{AI Assistants:} Deflecting standard customer questions regarding store timings, refunds, and order tracking to digital chatbot agents.
+\end{itemize}
+
+However, integrating diverse Machine Learning workflows (ranging from deep Convolutional Neural Networks to TF-IDF text vectorizers) into a singular low-latency pipeline is a major engineering challenge. Different models require distinct libraries, execution environments, and processing configurations, which can easily trigger package conflicts or CPU/GPU bottlenecks at startup.
+
+This project addresses these integration challenges by building the \textbf{AI-Powered Smart Retail Platform}. The codebase implements a robust, service-oriented prototype that wraps all image and text models into a unified service layer. 
 
 The complete codebase is publicly hosted on GitHub at: \\
 \url{https://github.com/SuyashSoni10/AI-Retail-Platform}.
 
-The platform is divided into two parts:
+The platform is split into two primary components to ensure clean separation of concerns:
 \begin{enumerate}
-    \item \textbf{Backend Server (FastAPI):} Runs the AI inference scripts and handles data endpoints.
-    \item \textbf{Frontend Interface (Streamlit):} Provides a web dashboard for store managers and self-checkout kiosks.
+    \item \textbf{Backend Server (FastAPI):} Serves as the central inference engine. It loads all deep learning and classical models once at startup, handles data routing, and exposes high-performance REST API endpoints. It is designed to be lightweight, scalable, and self-documenting.
+    \item \textbf{Frontend Interface (Streamlit):} Serves as the interactive terminal for both checkout operators and store managers. It connects to the backend over HTTP to query model predictions in real-time, displaying results through clean visual gauges, camera snapshot streams, and conversational chat feeds.
 \end{enumerate}
 
+
 ---
+
+\newpage
 
 \section{Project Architecture \& Data Flow}
 The project uses a clean modular structure. Data flows from the user inputs on the dashboard down to the ML models, returning results instantly:
@@ -135,36 +148,36 @@ The complete system is organized as a modular repository, isolating training pip
 
 \begin{lstlisting}[caption=Project Directory Tree]
 Mp-Online-AIML/
-├── app/                        # FastAPI Backend Application
-│   ├── main.py                 # API Main Entrypoint & Telemetry Route
-│   ├── schemas.py              # Pydantic Request/Response validation schemas
-│   ├── routers/                # REST API Endpoint Routers
-│   │   ├── vision.py           # Face Recognition & Product Classifier endpoints
-│   │   ├── nlp.py              # Customer reviews sentiment endpoint
-│   │   └── chatbot.py          # FAQ Support Chatbot endpoint
-│   ├── services/               # Inference Core Services
-│   │   ├── cv_service.py       # CV Model Loader & Face DB matching
-│   │   ├── nlp_service.py      # TF-IDF clean-text NLP prediction
-│   │   └── chatbot_service.py  # FAQ intent parser & template generator
-│   └── models/                 # Serialized Model binaries
-│       ├── product_classifier.h5
-│       ├── face_db.pkl
-│       ├── sentiment_model.pkl
-│       ├── vectorizer.pkl
-│       └── chatbot_model.pkl
-├── data/                       # FAQ Intents & Data Storage
-│   ├── intents.json            # Chatbot queries and responses
-│   └── reviews.csv             # Customer reviews raw dataset
-├── notebooks/                  # Model Training Pipelines (Jupyter Notebooks)
-│   ├── 01_product_classifier_training.ipynb
-│   ├── 02_face_recognition_setup.ipynb
-│   ├── 03_sentiment_model_training.ipynb
-│   └── 04_chatbot_intent_training.ipynb
-├── tests/                      # Automated Verification Unit Tests
-│   └── test_endpoints.py       # Pytest regression checks
-├── dashboard.py                # Streamlit Web Application Frontend
-├── requirements.txt            # Python dependencies packages
-└── .gitignore                  # Git commit exclusions list
+|-- app/                        # FastAPI Backend Application
+|   |-- main.py                 # API Main Entrypoint & Telemetry Route
+|   |-- schemas.py              # Pydantic Request/Response validation schemas
+|   |-- routers/                # REST API Endpoint Routers
+|   |   |-- vision.py           # Face Recognition & Product Classifier endpoints
+|   |   |-- nlp.py              # Customer reviews sentiment endpoint
+|   |   `-- chatbot.py          # FAQ Support Chatbot endpoint
+|   |-- services/               # Inference Core Services
+|   |   |-- cv_service.py       # CV Model Loader & Face DB matching
+|   |   |-- nlp_service.py      # TF-IDF clean-text NLP prediction
+|   |   `-- chatbot_service.py  # FAQ intent parser & template generator
+|   `-- models/                 # Serialized Model binaries
+|       |-- product_classifier.h5
+|       |-- face_db.pkl
+|       |-- sentiment_model.pkl
+|       |-- vectorizer.pkl
+|       `-- chatbot_model.pkl
+|-- data/                       # FAQ Intents & Data Storage
+|   |-- intents.json            # Chatbot queries and responses
+|   `-- reviews.csv             # Customer reviews raw dataset
+|-- notebooks/                  # Model Training Pipelines (Jupyter Notebooks)
+|   |-- 01_product_classifier_training.ipynb
+|   |-- 02_face_recognition_setup.ipynb
+|   |-- 03_sentiment_model_training.ipynb
+|   `-- 04_chatbot_intent_training.ipynb
+|-- tests/                      # Automated Verification Unit Tests
+|   `-- test_endpoints.py       # Pytest regression checks
+|-- dashboard.py                # Streamlit Web Application Frontend
+|-- requirements.txt            # Python dependencies packages
+`-- .gitignore                  # Git commit exclusions list
 \end{lstlisting}
 
 Detailed folder descriptions:
