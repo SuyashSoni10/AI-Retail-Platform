@@ -1,0 +1,166 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{listings}
+\usepackage{geometry}
+\usepackage{color}
+
+\geometry{margin=1in}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=blue,
+    pdftitle={AI-Powered Smart Retail Platform Report},
+    pdfpagemode=FullScreen,
+}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+\title{\textbf{AI-Powered Smart Retail \& Customer Intelligence Platform}\\ \large System Architecture, Methodology, and Prototype Report}
+\author{\textbf{Suyash Soni}\\ Department of Computer Science \& Engineering}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Traditional retail environments are undergoing rapid digital transformations driven by advancements in computer vision and natural language processing. This report presents an integrated prototype of an AI-Powered Smart Retail Platform that consolidates four core intelligent workflows: (1) automatic self-checkout product classification, (2) face-recognition-based loyalty profile matching, (3) customer review sentiment analysis, and (4) an interactive FAQ customer support chatbot. The system implements a decoupled service-oriented architecture with a Python FastAPI backend providing REST endpoints, and a Streamlit-based web interface for managers and checkout terminals. We detail the methodology, datasets (RPC, LFW, and Amazon Product Reviews), custom deserialization layers used to resolve Keras serialization gaps, and endpoint verification testing results.
+\end{abstract}
+
+\section{Introduction}
+Modern retail systems require high automation to improve self-checkout speed, track customer satisfaction, and build personalized loyalty programs. However, integrating multiple distinct Machine Learning models (Convolutional Neural Networks, TF-IDF classifiers, and intent networks) into a singular, low-latency application poses significant architectural challenges. 
+
+This project implements a fully functional prototype resolving these concerns through a unified service layer and a decoupled API design. The complete source code is hosted at the GitHub repository: \url{https://github.com/SuyashSoni10/AI-Retail-Platform}.
+
+\section{Dataset Descriptions \& Preprocessing}
+The prototype utilizes three open-source benchmark datasets to simulate real-world retail workflows.
+
+\subsection{Retail Product Checkout (RPC) Dataset}
+\textbf{Source:} \url{https://www.kaggle.com/datasets/diyer22/retail-product-checkout-dataset} \\
+The RPC dataset is a large-scale collection specifically designed for automatic checkout (ACO) systems. It features:
+\begin{itemize}
+    \item 200 distinct fine-grained retail product categories.
+    \item Multi-item shelf images taken under varying lighting and layouts.
+    \item Structured COCO format bounding box and class annotations.
+\end{itemize}
+\textbf{Prototype Implementation:} To keep training within standard resource constraints (under 4 hours), the training pipeline compiles a balanced subset of the top 5 most frequent product classes (\textit{bags, clothing, electronics, groceries, shoes}). Images are preprocessed and resized to $128 \times 128 \times 3$ pixels.
+
+\subsection{Labeled Faces in the Wild (LFW) Dataset}
+\textbf{Source:} \url{https://www.kaggle.com/datasets/jessicali9530/lfw-dataset} \\
+The LFW dataset contains over 13,000 images of faces collected from the web, designed for studying unconstrained face recognition.
+\textbf{Prototype Implementation:} We scan the dataset directories dynamically and select profiles having at least three distinct portraits. The top 5 individuals are chosen to populate the store's loyalty database. The pipeline crops facial regions using Haar Cascades and extracts embeddings to compile the database mapping labels to customer profiles.
+
+\subsection{Amazon Product Reviews Dataset}
+\textbf{Source:} \url{https://www.kaggle.com/datasets/arhamrumi/amazon-product-reviews} \\
+This dataset contains fine-grained customer reviews, scores, and helpfulness metrics.
+\textbf{Prototype Implementation:} The text classifier loads the CSV, maps ratings (Scores 1 to 5) to sentiment categories (\textit{positive, neutral, negative}), and samples a balanced subset of 10,000 reviews per class (total 30,000 records) to avoid label bias.
+
+---
+
+\section{System Architecture \& Methodology}
+The application follows a clean service-oriented architecture, dividing logic between ML services, FastAPI endpoint routers, and the Streamlit frontend.
+
+\subsection{Machine Learning Model Architectures}
+\begin{itemize}
+    \item \textbf{Product Classifier:} Implemented using transfer learning on the \textbf{MobileNetV2} base network pre-trained on ImageNet. A Global Average Pooling layer, Dropout (0.2), and a Dense softmax layer are stacked on top. The base weights are frozen, and only the final classification layers are trained.
+    \item \textbf{Sentiment Analyzer:} Text data is transformed using TF-IDF feature extraction (uni-grams and bi-grams, max 2500 features) and classified via a L2-regularized Logistic Regression model.
+    \item \textbf{FAQ Chatbot:} Uses a bag-of-words vectorizer and a multi-class feedforward classification network to identify tags defined in \texttt{intents.json}.
+\end{itemize}
+
+\subsection{Cross-Environment Keras Deserialization Layer}
+During model migration from Kaggle (compiled under Keras 3) to the local backend environment (running legacy Keras 2 loaders), inline mathematical operations like division and subtraction inside the model preprocessing pipeline caused loading failures due to missing layer registrations (\texttt{ValueError: Unknown layer: TrueDivide}). 
+
+To resolve this without retraining, custom compatibility layers were registered in the API service layer:
+\begin{lstlisting}[language=Python, caption=Custom Serialization Wrappers]
+class TrueDivide(Layer):
+    def call(self, x, y=1.0):
+        return x / y
+    def __call__(self, *args, **kwargs):
+        tensor = args[0]
+        divisor = args[1] if len(args) > 1 else 1.0
+        kwargs['y'] = divisor
+        return super().__call__(tensor, **kwargs)
+\end{lstlisting}
+
+---
+
+\section{Implementation Details}
+\subsection{FastAPI Backend API Layer}
+The backend server (hosted on port \texttt{8000}) exposes several modular routers:
+\begin{table}[ht]
+\centering
+\caption{REST API Endpoints}
+\begin{tabular}{lll}
+\toprule
+\textbf{Endpoint} & \textbf{Method} & \textbf{Function} \\
+\midrule
+\texttt{/vision/classify-product} & POST & Accepts image bytes $\to$ returns category and confidence \\
+\texttt{/vision/recognize-face} & POST & Accepts image bytes $\to$ returns customer loyalty details \\
+\texttt{/nlp/analyze-sentiment} & POST & Accepts JSON string $\to$ returns positive/neutral/negative label \\
+\texttt{/chatbot} & POST & Accepts user query $\to$ returns text response and tag \\
+\texttt{/dashboard/stats} & GET & Returns aggregate store visit and sales telemetry \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Streamlit Frontend Dashboard}
+The user dashboard (hosted on port \texttt{8501}) is implemented in python, incorporating five distinct navigation tabs:
+\begin{enumerate}
+    \item \textbf{Loyalty Kiosk:} Accesses user webcams via \texttt{st.camera\_input} to recognize returning customers.
+    \item \textbf{Product Scanner:} Drag-and-drop checkout register scanning interface.
+    \item \textbf{Sentiment Analyzer:} Interactive review evaluation widget.
+    \item \textbf{FAQ Chatbot:} Built-in conversation interface mapping chat inputs.
+    \item \textbf{Analytics Dashboard:} Displays aggregate data fetched from the API stats endpoint using dynamic charts.
+\end{enumerate}
+
+---
+
+\section{Evaluation \& Verification}
+An automated pytest script was written under \texttt{tests/test\_endpoints.py} to mock file uploads and JSON requests against all routes. Execution verified 100\% endpoint coverage:
+\begin{lstlisting}[language=bash]
+tests/test_endpoints.py ......                                           [100%]
+======================= 6 passed, 4 warnings in 13.03s ========================
+\end{lstlisting}
+The tests confirmed correct schema output matching Pydantic specifications.
+
+\section{Conclusion \& Future Scope}
+This prototype successfully demonstrates a unified AI-Powered Retail system utilizing diverse machine learning models behind a clean API layer. Future iterations will focus on:
+\begin{itemize}
+    \item Containerizing the application using Docker.
+    \item Deploying the API and web services to cloud staging (e.g. Render, AWS EC2).
+    \item Integrating real-time database transactions for inventory checkout.
+\end{itemize}
+
+\end{document}
