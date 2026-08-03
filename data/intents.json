@@ -1,0 +1,145 @@
+{
+  "intents": [
+    {
+      "tag": "greeting",
+      "patterns": [
+        "Hi",
+        "Hello",
+        "Hey",
+        "Is anyone there?",
+        "Good day",
+        "What's up",
+        "Howdy",
+        "Hi there"
+      ],
+      "responses": [
+        "Hello! Welcome to Smart Retail Support. How can I help you today?",
+        "Hi there! How can I assist you with your shopping experience today?",
+        "Hey! Welcome. What can I do for you today?"
+      ]
+    },
+    {
+      "tag": "goodbye",
+      "patterns": [
+        "Bye",
+        "See you later",
+        "Goodbye",
+        "I'm leaving",
+        "Talk to you later",
+        "Have a good day",
+        "Thanks, bye"
+      ],
+      "responses": [
+        "Goodbye! Thank you for shopping with us.",
+        "Have a great day! Hope to see you again soon.",
+        "Bye! Please let us know if you need anything else."
+      ]
+    },
+    {
+      "tag": "thanks",
+      "patterns": [
+        "Thanks",
+        "Thank you",
+        "That's helpful",
+        "Awesome, thanks",
+        "Thank you so much",
+        "Much appreciated"
+      ],
+      "responses": [
+        "You're very welcome!",
+        "Anytime! Let me know if you need anything else.",
+        "Glad I could help. Happy shopping!"
+      ]
+    },
+    {
+      "tag": "hours",
+      "patterns": [
+        "What are your hours?",
+        "When do you open?",
+        "When do you close?",
+        "What are the opening times?",
+        "Are you open today?",
+        "Store hours",
+        "Opening hours"
+      ],
+      "responses": [
+        "Our stores are open from 9:00 AM to 10:00 PM every day (Monday to Sunday).",
+        "We are open daily from 9:00 AM to 10:00 PM."
+      ]
+    },
+    {
+      "tag": "location",
+      "patterns": [
+        "Where are you located?",
+        "Where is your store?",
+        "Find a store near me",
+        "What is your address?",
+        "How do I get there?"
+      ],
+      "responses": [
+        "We have multiple retail locations across the city. You can find our main store at 123 Retail Plaza, Downtown. To find other branches, please visit the Store Locator page on our website.",
+        "Our flagship store is located at 123 Retail Plaza, Downtown. We also have express stores in major shopping malls."
+      ]
+    },
+    {
+      "tag": "returns",
+      "patterns": [
+        "How do I return an item?",
+        "What is your return policy?",
+        "Can I get a refund?",
+        "Return policy",
+        "How long do I have to return something?",
+        "Exchange an item"
+      ],
+      "responses": [
+        "We offer a 30-day return policy for most items in their original condition and packaging. You will need your receipt or invoice. Refunds will be issued to the original payment method.",
+        "You can return items within 30 days of purchase. Simply bring the product and receipt to any store location or start a return online via your account portal."
+      ]
+    },
+    {
+      "tag": "track_order",
+      "patterns": [
+        "Where is my order?",
+        "How can I track my package?",
+        "Order status",
+        "Track my delivery",
+        "Is my order shipped?",
+        "I haven't received my order yet"
+      ],
+      "responses": [
+        "You can track your order using the tracking number sent to your email. Alternatively, log into your account and check the 'My Orders' section.",
+        "Please check the shipment tracking link in your confirmation email or provide me with your Order ID so I can look it up."
+      ]
+    },
+    {
+      "tag": "payment_methods",
+      "patterns": [
+        "What payment methods do you accept?",
+        "Can I pay with Apple Pay?",
+        "Do you accept credit cards?",
+        "Cash on delivery?",
+        "Payment options",
+        "PayPal"
+      ],
+      "responses": [
+        "We accept all major credit and debit cards (Visa, MasterCard, Amex), Apple Pay, Google Pay, PayPal, and store gift cards.",
+        "We support Visa, MasterCard, American Express, PayPal, Apple Pay, and Google Pay. Cash on delivery is also available for select pin codes."
+      ]
+    },
+    {
+      "tag": "loyalty_program",
+      "patterns": [
+        "How do I join the rewards club?",
+        "Loyalty program details",
+        "How to earn points?",
+        "Do you have a membership?",
+        "Smart Retail Rewards",
+        "Membership points"
+      ],
+      "responses": [
+        "Our Smart Retail Rewards program is free! You earn 1 point for every $1 spent. Points can be redeemed for discounts on future purchases. Sign up on our website or at checkout in-store.",
+        "Join our Loyalty Program to earn points on every purchase, get early access to sales, and receive exclusive member-only discount coupons."
+      ]
+    }
+  ]
+}

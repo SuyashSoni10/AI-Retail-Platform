@@ -1,0 +1,60 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Pytest / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Environments
+venv/
+venv_**/
+virtual_env/
+.env
+.venv
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Project Custom Ignores
+# Exclude large dataset files (e.g. raw Reviews.csv is 300MB+)
+data/reviews.csv
+data/Reviews.csv
+
+# Exclude large trained ML model binary files to keep git repository light
+app/models/*.h5
+app/models/*.xml
+app/models/*.pkl
+
+# Exclude temporary Kaggle download/results folders
+results-*/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+desktop.ini
