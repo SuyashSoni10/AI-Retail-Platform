@@ -130,6 +130,52 @@ The project uses a clean modular structure. Data flows from the user inputs on t
     \item \textbf{Model Loading \& Prediction:} The Service script loads the trained model binary (from the \texttt{app/models/} folder), processes the input data (resizes images, cleans review text, or encodes chat messages), executes model predictions, and returns formatted JSON data back to the user interface.
 \end{enumerate}
 
+\subsection{Project Directory Tree \& Layout}
+The complete system is organized as a modular repository, isolating training pipelines (notebooks), backend APIs, and the frontend user interface. Below is the file tree representing the project organization:
+
+\begin{lstlisting}[caption=Project Directory Tree]
+Mp-Online-AIML/
+├── app/                        # FastAPI Backend Application
+│   ├── main.py                 # API Main Entrypoint & Telemetry Route
+│   ├── schemas.py              # Pydantic Request/Response validation schemas
+│   ├── routers/                # REST API Endpoint Routers
+│   │   ├── vision.py           # Face Recognition & Product Classifier endpoints
+│   │   ├── nlp.py              # Customer reviews sentiment endpoint
+│   │   └── chatbot.py          # FAQ Support Chatbot endpoint
+│   ├── services/               # Inference Core Services
+│   │   ├── cv_service.py       # CV Model Loader & Face DB matching
+│   │   ├── nlp_service.py      # TF-IDF clean-text NLP prediction
+│   │   └── chatbot_service.py  # FAQ intent parser & template generator
+│   └── models/                 # Serialized Model binaries
+│       ├── product_classifier.h5
+│       ├── face_db.pkl
+│       ├── sentiment_model.pkl
+│       ├── vectorizer.pkl
+│       └── chatbot_model.pkl
+├── data/                       # FAQ Intents & Data Storage
+│   ├── intents.json            # Chatbot queries and responses
+│   └── reviews.csv             # Customer reviews raw dataset
+├── notebooks/                  # Model Training Pipelines (Jupyter Notebooks)
+│   ├── 01_product_classifier_training.ipynb
+│   ├── 02_face_recognition_setup.ipynb
+│   ├── 03_sentiment_model_training.ipynb
+│   └── 04_chatbot_intent_training.ipynb
+├── tests/                      # Automated Verification Unit Tests
+│   └── test_endpoints.py       # Pytest regression checks
+├── dashboard.py                # Streamlit Web Application Frontend
+├── requirements.txt            # Python dependencies packages
+└── .gitignore                  # Git commit exclusions list
+\end{lstlisting}
+
+Detailed folder descriptions:
+\begin{itemize}
+    \item \textbf{\texttt{app/}:} Contains the entire FastAPI backend. Subdivided into \texttt{routers/} (which handle HTTP requests and JSON routing), \texttt{services/} (which load models and perform numerical inference calculations), and \texttt{models/} (which store the weights files).
+    \item \textbf{\texttt{data/}:} Houses dataset configuration models. \texttt{intents.json} serves as the training vocabulary for the chatbot and includes responses for greetings, business hours, and store refunds.
+    \item \textbf{\texttt{notebooks/}:} Used for development. Contains the 4 model training pipelines configured to detect Kaggle environments and accelerate training on GPUs.
+    \item \textbf{\texttt{tests/}:} Contains automated integration tests verifying API endpoint response status codes and schemas.
+    \item \textbf{\texttt{dashboard.py}:} Renders the manager metrics dashboard, chatbot interfaces, and camera streaming modules.
+\end{itemize}
+
 ---
 
 \section{Detailed Notebook Explanations}
